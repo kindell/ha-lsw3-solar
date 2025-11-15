@@ -5,6 +5,7 @@ from datetime import timedelta
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import Platform
 from homeassistant.core import HomeAssistant
+from homeassistant.helpers import discovery
 from homeassistant.helpers.update_coordinator import (
     DataUpdateCoordinator,
     UpdateFailed,
@@ -44,6 +45,13 @@ async def async_setup(hass: HomeAssistant, config: dict) -> bool:
     await coordinator.async_refresh()
 
     hass.data[DOMAIN]["coordinator"] = coordinator
+
+    # Load sensor platform
+    hass.async_create_task(
+        discovery.async_load_platform(
+            hass, Platform.SENSOR, DOMAIN, {}, config
+        )
+    )
 
     return True
 
