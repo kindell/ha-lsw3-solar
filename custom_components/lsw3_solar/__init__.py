@@ -45,9 +45,6 @@ async def async_setup(hass: HomeAssistant, config: dict) -> bool:
 
     hass.data[DOMAIN]["coordinator"] = coordinator
 
-    # Forward setup to sensor platform
-    await hass.helpers.discovery.async_load_platform(Platform.SENSOR, DOMAIN, {}, config)
-
     return True
 
 
@@ -79,12 +76,9 @@ class LSW3DataUpdateCoordinator(DataUpdateCoordinator):
         """Fetch data from LSW-3."""
         try:
             # Run blocking IO in executor
-            success = await self.hass.async_add_executor_job(
+            await self.hass.async_add_executor_job(
                 self.reader.read_all
             )
-
-            if not success:
-                raise UpdateFailed("Failed to read data from LSW-3")
 
             return self.reader.data
 

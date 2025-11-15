@@ -127,7 +127,6 @@ class LSW3Reader:
 
     def read_energy_totals(self):
         """Read energy production and consumption totals"""
-        print("📊 Reading Energy Totals...")
         data = read_registers(self.ip, self.port, self.serial_number, 0x684, 0x69B)
         reg_range = (0x684, 0x69B, data)
 
@@ -149,7 +148,6 @@ class LSW3Reader:
 
     def read_pv_output(self):
         """Read PV string voltage, current, and power"""
-        print("☀️  Reading PV Output...")
         data = read_registers(self.ip, self.port, self.serial_number, 0x584, 0x589)
         reg_range = (0x584, 0x589, data)
 
@@ -169,7 +167,6 @@ class LSW3Reader:
 
     def read_grid_output(self):
         """Read grid voltage, frequency, and power"""
-        print("⚡ Reading Grid Output...")
         data = read_registers(self.ip, self.port, self.serial_number, 0x484, 0x4AF)
         reg_range = (0x484, 0x4AF, data)
 
@@ -190,7 +187,6 @@ class LSW3Reader:
 
     def read_system_info(self):
         """Read system temperatures and status"""
-        print("🌡️  Reading System Info...")
         data = read_registers(self.ip, self.port, self.serial_number, 0x404, 0x431)
         reg_range = (0x404, 0x431, data)
 
@@ -209,25 +205,40 @@ class LSW3Reader:
             if result:
                 self.data[name] = {**result, "unit": unit}
 
-    def read_all(self):
+    def read_all(self, verbose=False):
         """Read all sensor data"""
-        print("\n" + "=" * 70)
-        print("🌞 LSW-3 Solar Inverter - Complete Data Read")
-        print("=" * 70)
+        if verbose:
+            print("\n" + "=" * 70)
+            print("🌞 LSW-3 Solar Inverter - Complete Data Read")
+            print("=" * 70)
 
         try:
+            if verbose:
+                print("📊 Reading Energy Totals...")
             self.read_energy_totals()
+
+            if verbose:
+                print("☀️  Reading PV Output...")
             self.read_pv_output()
+
+            if verbose:
+                print("⚡ Reading Grid Output...")
             self.read_grid_output()
+
+            if verbose:
+                print("🌡️  Reading System Info...")
             self.read_system_info()
 
-            print("\n✅ All data read successfully!")
+            if verbose:
+                print("\n✅ All data read successfully!")
             return True
         except Exception as e:
-            print(f"\n❌ Error reading data: {e}")
-            import traceback
-            traceback.print_exc()
-            return False
+            if verbose:
+                print(f"\n❌ Error reading data: {e}")
+                import traceback
+                traceback.print_exc()
+            # Re-raise exception so HA can log it properly
+            raise
 
     def print_summary(self):
         """Print human-readable summary"""
@@ -289,7 +300,7 @@ def main():
     # Read all data
     reader = LSW3Reader(LSW3_IP, LSW3_PORT, SERIAL_NUMBER)
 
-    if reader.read_all():
+    if reader.read_all(verbose=True):
         reader.print_summary()
 
         # Save to JSON
