@@ -93,7 +93,14 @@ def read_registers(ip, port, serial_number, start_register, end_register):
                 if len(response) >= 28 + data_length:
                     break
 
+        # Validate response
+        if len(response) < 28:
+            raise ConnectionError(f"Invalid response from LSW-3: only {len(response)} bytes received (expected >= 28)")
+
         data_length = response[27]
+        if len(response) < 28 + data_length:
+            raise ConnectionError(f"Incomplete response from LSW-3: {len(response)} bytes (expected {28 + data_length})")
+
         return response[28:28 + data_length]
 
 class LSW3Reader:
