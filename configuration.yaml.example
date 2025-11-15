@@ -1,0 +1,18 @@
+# LSW-3 Solar Integration Configuration Example
+#
+# Add this to your Home Assistant configuration.yaml file
+
+lsw3_solar:
+  # Required: IP address of your LSW-3 WiFi logger
+  ip_address: "10.42.1.9"
+
+  # Required: Serial number of your LSW-3 logger
+  # Find this in the web interface at http://YOUR_IP/status.html
+  serial_number: 2734303872
+
+  # Optional: TCP port (default: 8899)
+  port: 8899
+
+  # Optional: Update interval in seconds (default: 30)
+  # Increase if you experience connection issues
+  scan_interval: 30
